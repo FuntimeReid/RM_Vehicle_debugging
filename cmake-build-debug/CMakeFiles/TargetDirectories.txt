@@ -1,0 +1,3 @@
+C:/Users/73932/CLionProjects/RMTest/cmake-build-debug/CMakeFiles/RMTest.elf.dir
+C:/Users/73932/CLionProjects/RMTest/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/73932/CLionProjects/RMTest/cmake-build-debug/CMakeFiles/rebuild_cache.dir
