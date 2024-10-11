@@ -139,6 +139,16 @@ build CMakeFiles/RMTest.elf.dir/Core/Startup/startup_stm32f407ighx.s.obj: ASM_CO
   TARGET_COMPILE_PDB = CMakeFiles\RMTest.elf.dir\
   TARGET_PDB = RMTest.elf.pdb
 
+build CMakeFiles/RMTest.elf.dir/Driver/Driver_BMI088.c.obj: C_COMPILER__RMTest.2eelf_unscanned_Debug C$:/Users/73932/CLionProjects/RMTest/Driver/Driver_BMI088.c || cmake_object_order_depends_target_RMTest.elf
+  DEFINES = -DDEBUG -DSTM32F407xx -DUSE_HAL_DRIVER
+  DEP_FILE = CMakeFiles\RMTest.elf.dir\Driver\Driver_BMI088.c.obj.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always -mcpu=cortex-m4 -mthumb -mthumb-interwork -ffunction-sections -fdata-sections -fno-common -fmessage-length=0 -Og -g
+  INCLUDES = -IC:/Users/73932/CLionProjects/RMTest/Core/Inc -IC:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Inc -IC:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IC:/Users/73932/CLionProjects/RMTest/Drivers/CMSIS/Device/ST/STM32F4xx/Include -IC:/Users/73932/CLionProjects/RMTest/Drivers/CMSIS/Include -IC:/Users/73932/CLionProjects/RMTest/Bsp -IC:/Users/73932/CLionProjects/RMTest/Driver
+  OBJECT_DIR = CMakeFiles\RMTest.elf.dir
+  OBJECT_FILE_DIR = CMakeFiles\RMTest.elf.dir\Driver
+  TARGET_COMPILE_PDB = CMakeFiles\RMTest.elf.dir\
+  TARGET_PDB = RMTest.elf.pdb
+
 build CMakeFiles/RMTest.elf.dir/Driver/Driver_PID.c.obj: C_COMPILER__RMTest.2eelf_unscanned_Debug C$:/Users/73932/CLionProjects/RMTest/Driver/Driver_PID.c || cmake_object_order_depends_target_RMTest.elf
   DEFINES = -DDEBUG -DSTM32F407xx -DUSE_HAL_DRIVER
   DEP_FILE = CMakeFiles\RMTest.elf.dir\Driver\Driver_PID.c.obj.d
@@ -279,6 +289,16 @@ build CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_r
   TARGET_COMPILE_PDB = CMakeFiles\RMTest.elf.dir\
   TARGET_PDB = RMTest.elf.pdb
 
+build CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.obj: C_COMPILER__RMTest.2eelf_unscanned_Debug C$:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c || cmake_object_order_depends_target_RMTest.elf
+  DEFINES = -DDEBUG -DSTM32F407xx -DUSE_HAL_DRIVER
+  DEP_FILE = CMakeFiles\RMTest.elf.dir\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.c.obj.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always -mcpu=cortex-m4 -mthumb -mthumb-interwork -ffunction-sections -fdata-sections -fno-common -fmessage-length=0 -Og -g
+  INCLUDES = -IC:/Users/73932/CLionProjects/RMTest/Core/Inc -IC:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Inc -IC:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IC:/Users/73932/CLionProjects/RMTest/Drivers/CMSIS/Device/ST/STM32F4xx/Include -IC:/Users/73932/CLionProjects/RMTest/Drivers/CMSIS/Include -IC:/Users/73932/CLionProjects/RMTest/Bsp -IC:/Users/73932/CLionProjects/RMTest/Driver
+  OBJECT_DIR = CMakeFiles\RMTest.elf.dir
+  OBJECT_FILE_DIR = CMakeFiles\RMTest.elf.dir\Drivers\STM32F4xx_HAL_Driver\Src
+  TARGET_COMPILE_PDB = CMakeFiles\RMTest.elf.dir\
+  TARGET_PDB = RMTest.elf.pdb
+
 build CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.obj: C_COMPILER__RMTest.2eelf_unscanned_Debug C$:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c || cmake_object_order_depends_target_RMTest.elf
   DEFINES = -DDEBUG -DSTM32F407xx -DUSE_HAL_DRIVER
   DEP_FILE = CMakeFiles\RMTest.elf.dir\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim.c.obj.d
@@ -299,6 +319,16 @@ build CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_t
   TARGET_COMPILE_PDB = CMakeFiles\RMTest.elf.dir\
   TARGET_PDB = RMTest.elf.pdb
 
+build CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.obj: C_COMPILER__RMTest.2eelf_unscanned_Debug C$:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c || cmake_object_order_depends_target_RMTest.elf
+  DEFINES = -DDEBUG -DSTM32F407xx -DUSE_HAL_DRIVER
+  DEP_FILE = CMakeFiles\RMTest.elf.dir\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_uart.c.obj.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always -mcpu=cortex-m4 -mthumb -mthumb-interwork -ffunction-sections -fdata-sections -fno-common -fmessage-length=0 -Og -g
+  INCLUDES = -IC:/Users/73932/CLionProjects/RMTest/Core/Inc -IC:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Inc -IC:/Users/73932/CLionProjects/RMTest/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IC:/Users/73932/CLionProjects/RMTest/Drivers/CMSIS/Device/ST/STM32F4xx/Include -IC:/Users/73932/CLionProjects/RMTest/Drivers/CMSIS/Include -IC:/Users/73932/CLionProjects/RMTest/Bsp -IC:/Users/73932/CLionProjects/RMTest/Driver
+  OBJECT_DIR = CMakeFiles\RMTest.elf.dir
+  OBJECT_FILE_DIR = CMakeFiles\RMTest.elf.dir\Drivers\STM32F4xx_HAL_Driver\Src
+  TARGET_COMPILE_PDB = CMakeFiles\RMTest.elf.dir\
+  TARGET_PDB = RMTest.elf.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target RMTest.elf
@@ -307,7 +337,7 @@ build CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_t
 #############################################
 # Link the executable RMTest.elf
 
-build RMTest.elf: C_EXECUTABLE_LINKER__RMTest.2eelf_Debug CMakeFiles/RMTest.elf.dir/Bsp/Bsp_CAN.c.obj CMakeFiles/RMTest.elf.dir/Bsp/Bsp_Controller.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/main.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/stm32f4xx_hal_msp.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/stm32f4xx_it.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/syscalls.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/sysmem.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/system_stm32f4xx.c.obj CMakeFiles/RMTest.elf.dir/Core/Startup/startup_stm32f407ighx.s.obj CMakeFiles/RMTest.elf.dir/Driver/Driver_PID.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.obj
+build RMTest.elf: C_EXECUTABLE_LINKER__RMTest.2eelf_Debug CMakeFiles/RMTest.elf.dir/Bsp/Bsp_CAN.c.obj CMakeFiles/RMTest.elf.dir/Bsp/Bsp_Controller.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/main.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/stm32f4xx_hal_msp.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/stm32f4xx_it.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/syscalls.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/sysmem.c.obj CMakeFiles/RMTest.elf.dir/Core/Src/system_stm32f4xx.c.obj CMakeFiles/RMTest.elf.dir/Core/Startup/startup_stm32f407ighx.s.obj CMakeFiles/RMTest.elf.dir/Driver/Driver_BMI088.c.obj CMakeFiles/RMTest.elf.dir/Driver/Driver_PID.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.obj CMakeFiles/RMTest.elf.dir/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.obj
   FLAGS = -g
   LINK_FLAGS = -Wl,-gc-sections,--print-memory-usage,-Map=C:/Users/73932/CLionProjects/RMTest/cmake-build-debug/RMTest.map -mcpu=cortex-m4 -mthumb -mthumb-interwork -T C:/Users/73932/CLionProjects/RMTest/STM32F407IGHX_FLASH.ld
   OBJECT_DIR = CMakeFiles\RMTest.elf.dir

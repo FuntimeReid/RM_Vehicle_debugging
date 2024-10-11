@@ -53,12 +53,54 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+  void LED_WHITE(void);
+  void LED_RED(void);
+  void LED_GREEN(void);
+  void LED_BLUE(void);
+  void LED_OFF(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LED_R_Pin GPIO_PIN_12
+#define LED_R_GPIO_Port GPIOH
+#define LED_G_Pin GPIO_PIN_11
+#define LED_G_GPIO_Port GPIOH
+#define LED_B_Pin GPIO_PIN_10
+#define LED_B_GPIO_Port GPIOH
 
 /* USER CODE BEGIN Private defines */
+
+  typedef struct
+  {
+   struct
+    {
+      int16_t ch0;
+      int16_t ch1;
+      int16_t ch2;
+      int16_t ch3;
+      uint8_t s1;
+      uint8_t s2;
+    }rc;
+    struct
+    {
+      int16_t x;
+      int16_t y;
+      int16_t z;
+      uint8_t press_l;
+      uint8_t press_r;
+    }mouse;
+    struct
+    {
+      uint16_t v;
+    }key;
+  }RC_Ctl_t;
+
+  extern SPI_HandleTypeDef hspi1;
+  extern volatile uint8_t RCMode;
+  extern volatile int32_t RCMode_cnt;
+  extern UART_HandleTypeDef huart3;
+  extern volatile uint8_t dbus_rx_buffer[18];
+  extern volatile RC_Ctl_t RC_Ctl;
 
 /* USER CODE END Private defines */
 
