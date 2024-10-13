@@ -396,7 +396,7 @@
 		<object name="ObjId0072" type="CVariable">
 			<member name="name" type="string">RCMode</member>
 			<member name="unit" type="string">unit</member>
-			<member name="period" type="sint32">100</member>
+			<member name="period" type="sint32">500</member>
 			<member name="address" type="string">RCMode</member>
 			<member name="last_addr" type="uint32">0x20000460</member>
 			<member name="byte_size" type="sint32">1</member>
@@ -538,9 +538,7 @@
 			<member name="item3" type="CObject_ptr">ObjId0004</member>
 			<member name="item4" type="CObject_ptr">ObjId0040</member>
 			<member name="item5" type="CObject_ptr">ObjId0041</member>
-			<member name="item6" type="CObject_ptr">ObjId0061</member>
-			<member name="item7" type="CObject_ptr">ObjId0072</member>
-			<member name="item8" type="CObject_ptr">ObjId0073</member>
+			<member name="item6" type="CObject_ptr">ObjId0072</member>
 		</object>
 		<object name="ObjId0019" type="CObList"/>
 		<object name="ObjId0020" type="CObList">
@@ -749,12 +747,8 @@
 			<member name="value4" type="CObject_ptr">ObjId0057</member>
 			<member name="key5" type="CObject_ptr">ObjId0041</member>
 			<member name="value5" type="CObject_ptr">ObjId0059</member>
-			<member name="key6" type="CObject_ptr">ObjId0061</member>
-			<member name="value6" type="CObject_ptr">ObjId0070</member>
-			<member name="key7" type="CObject_ptr">ObjId0072</member>
-			<member name="value7" type="CObject_ptr">ObjId0074</member>
-			<member name="key8" type="CObject_ptr">ObjId0073</member>
-			<member name="value8" type="CObject_ptr">ObjId0076</member>
+			<member name="key6" type="CObject_ptr">ObjId0072</member>
+			<member name="value6" type="CObject_ptr">ObjId0074</member>
 		</object>
 		<object name="ObjId0049" type="CPrjItemBlock_VarInfo">
 			<member name="row_height" type="sint32">15</member>
@@ -786,21 +780,11 @@
 			<member name="row_cell_formats" type="CObArrayEx">ObjId0060</member>
 		</object>
 		<object name="ObjId0060" type="CObArray" length="0"/>
-		<object name="ObjId0070" type="CPrjItemBlock_VarInfo">
-			<member name="row_height" type="sint32">15</member>
-			<member name="row_cell_formats" type="CObArrayEx">ObjId0071</member>
-		</object>
-		<object name="ObjId0071" type="CObArray" length="0"/>
 		<object name="ObjId0074" type="CPrjItemBlock_VarInfo">
 			<member name="row_height" type="sint32">15</member>
 			<member name="row_cell_formats" type="CObArrayEx">ObjId0075</member>
 		</object>
 		<object name="ObjId0075" type="CObArray" length="0"/>
-		<object name="ObjId0076" type="CPrjItemBlock_VarInfo">
-			<member name="row_height" type="sint32">15</member>
-			<member name="row_cell_formats" type="CObArrayEx">ObjId0077</member>
-		</object>
-		<object name="ObjId0077" type="CObArray" length="0"/>
 		<object name="ObjId0038" type="CFlashProgDlg">
 			<member name="is_default" type="sint32">1</member>
 			<member name="csw_addr" type="string">fprgCSW</member>

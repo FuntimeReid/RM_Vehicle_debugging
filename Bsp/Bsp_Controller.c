@@ -54,6 +54,7 @@ void rc_callback_handler(RC_Ctl_t *RC_Ctl, uint8_t *buff)
 {
     //接收到数据,正常计数
     RCMode_cnt++;
+
     //用于处理接收到的遥控器（rc）数据，将接收到的字节解码
     RC_Ctl->rc.ch0 = (buff[0] | buff[1] << 8) & 0x07FF;     //将buff[0]和buff[1]的值组合为ch0通道的值，并将其限制在11位（通过与0x07FF按位与）
     RC_Ctl->rc.ch0 -= 1024;                                 //由于数据在364到1684，将解码后的数据减去1024，使其中心值为0
