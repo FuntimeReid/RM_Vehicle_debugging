@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "Bsp_CAN.h"
 #include "Bsp_Controller.h"
+#include "Driver_DM4310.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,6 +46,9 @@ void HAL_UART_IDLE_Callback(UART_HandleTypeDef *huart);
 /* USER CODE BEGIN PV */
 static int16_t tim2_cnt=0;
 static int16_t RCMode_cnt_tmp=0;
+int16_t DMMode=0;
+int16_t DM_cnt=0;
+volatile float DM_TargerPosition=1.5;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -278,6 +282,35 @@ void TIM2_IRQHandler(void)
   if(tim2_cnt % 5 == 1)
   {
     CAN_cmd_m3508();
+    if(DM_cnt<600)
+    {
+      DM_TargerPosition=1.5;
+      ctrl_motor(DM_TargerPosition,0,10,0,0);
+      DM_cnt++;
+    }
+    else
+    {
+      DMMode=1;
+    }
+  }
+
+  //100Hz发送达妙4310控制数据
+  if(tim2_cnt % 10 == 1)
+  {
+    if(RCMode==1&&DMMode==1)
+    {
+      //DMDM_TargerPosition介于1.02~2.09,实际控制在1.07~2.03
+      DM_TargerPosition += 0.00002*RC_Ctl.rc.ch1;
+      if (DM_TargerPosition > 2.03)
+      {
+        DM_TargerPosition = 2.03;
+      }
+      if (DM_TargerPosition < 1.07)
+      {
+        DM_TargerPosition = 1.07;
+      }
+      ctrl_motor(DM_TargerPosition,0,35,0.5,0);
+    }
   }
 
   /* USER CODE END TIM2_IRQn 0 */

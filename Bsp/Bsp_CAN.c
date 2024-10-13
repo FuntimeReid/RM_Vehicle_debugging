@@ -6,6 +6,7 @@
 
 #include <sys/types.h>
 
+#include "Driver_DM4310.h"
 #include "main.h"
 
 extern CAN_HandleTypeDef hcan1;
@@ -40,6 +41,10 @@ extern CAN_HandleTypeDef hcan2;
 static CAN_TxHeaderTypeDef  stm32_tx_message;
 static uint8_t              stm32_can_send_data[8];
 
+volatile float pitch_position;
+volatile float pitch_speed;
+volatile float pitch_torque;
+
 /**
   * @brief          hal库CAN回调函数,接收电机数据
   * @param[in]      hcan:CAN句柄指针
@@ -53,11 +58,19 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
     if (hcan == &hcan1)
     {
-        if(rx_header.StdId==0x206)
+        //DM4310
+        if(rx_header.StdId==0x205)
         {
-
+            int16_t p_int,s_int,t_int;
+            p_int=(rx_data[1]<<8)|rx_data[2];
+            s_int=(rx_data[3]<<4)|(rx_data[4]>>4);
+            t_int=((rx_data[4]&0xF)<<8)|rx_data[5];
+            pitch_position = uint_to_float(p_int, P_MIN, P_MAX, 16); // (-12.5,12.5)
+            pitch_speed = uint_to_float(s_int, V_MIN, V_MAX, 12); // (-45.0,45.0)
+            pitch_torque = uint_to_float(t_int, T_MIN, T_MAX, 12); // (-18.0,18.0)
         }
     }
+
     if (hcan == &hcan2)
     {
         if(rx_header.StdId==0x206)

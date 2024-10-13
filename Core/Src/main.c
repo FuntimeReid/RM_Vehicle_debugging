@@ -28,6 +28,7 @@
 #include "Bsp_CAN.h"
 #include "Bsp_Controller.h"
 #include "Driver_BMI088.h"
+#include "Driver_DM4310.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -126,6 +127,8 @@ int main(void)
   can_filter_init();
   HAL_TIM_Base_Start_IT(&htim2);
   //BMI088_Init();
+  ctrl_motor_Clear();
+  ctrl_motor_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
