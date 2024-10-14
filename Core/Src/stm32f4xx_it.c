@@ -284,8 +284,8 @@ void TIM2_IRQHandler(void)
     CAN_cmd_m3508();
     if(DM_cnt<600)
     {
-      DM_TargerPosition=1.5;
-      ctrl_motor(DM_TargerPosition,0,10,0,0);
+      DM_TargerPosition=-0.3;
+      ctrl_motor(DM_TargerPosition,0,10,0.1,0);
       DM_cnt++;
     }
     else
@@ -299,18 +299,25 @@ void TIM2_IRQHandler(void)
   {
     if(RCMode==1&&DMMode==1)
     {
-      //DMDM_TargerPosition介于1.02~2.09,实际控制在1.07~2.03
-      DM_TargerPosition += 0.00002*RC_Ctl.rc.ch1;
-      if (DM_TargerPosition > 2.03)
+      //电池有开关的车TargetPosition介于-0.74~0.2,软控范围在-0.71~0.15,平放大概在-0.3
+      //没开关的车TargerPosition介于1.02~2.09,实际控制在1.07~2.03,平放初始化大概在1.5
+      DM_TargerPosition += 0.000015*RC_Ctl.rc.ch3;
+      if (DM_TargerPosition > 0.15)
       {
-        DM_TargerPosition = 2.03;
+        DM_TargerPosition = 0.15;
       }
-      if (DM_TargerPosition < 1.07)
+      if (DM_TargerPosition < -0.71)
       {
-        DM_TargerPosition = 1.07;
+        DM_TargerPosition = -0.71;
       }
-      ctrl_motor(DM_TargerPosition,0,35,0.5,0);
+      ctrl_motor(DM_TargerPosition,0,50,0.5,0);
     }
+  }
+
+  //200hz发送6020电机控制数据
+  if(tim2_cnt % 5 == 1)
+  {
+    CAN_cmd_6020();
   }
 
   /* USER CODE END TIM2_IRQn 0 */

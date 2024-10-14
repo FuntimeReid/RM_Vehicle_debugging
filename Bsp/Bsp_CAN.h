@@ -12,7 +12,7 @@
 
 #endif //BSP_CAN_H
 
-extern void can_filter_init(void);
+void can_filter_init(void);
 
 typedef enum
 {
@@ -31,4 +31,8 @@ typedef enum
 
 } can_msg_id_e;
 
-extern void CAN_cmd_m3508(void);
+extern volatile int16_t GM6020_position;
+extern volatile int16_t GM6020_speed;
+
+void CAN_cmd_m3508(void);
+void CAN_cmd_6020(void);

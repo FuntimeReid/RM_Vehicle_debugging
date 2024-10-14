@@ -60,7 +60,7 @@ DMA_HandleTypeDef hdma_usart3_rx;
 
 /* USER CODE BEGIN PV */
 volatile uint8_t dbus_rx_buffer[18];
-volatile RC_Ctl_t RC_Ctl;
+volatile RC_Ctl_t RC_Ctl={0,0,0,0,1,1};
 volatile uint8_t RCMode=0;
 volatile int32_t RCMode_cnt=0;
 /* USER CODE END PV */

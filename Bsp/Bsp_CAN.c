@@ -7,6 +7,7 @@
 #include <sys/types.h>
 
 #include "Driver_DM4310.h"
+#include "Driver_PID.h"
 #include "main.h"
 
 extern CAN_HandleTypeDef hcan1;
@@ -45,6 +46,12 @@ volatile float pitch_position;
 volatile float pitch_speed;
 volatile float pitch_torque;
 
+volatile int16_t GM6020_position;
+volatile int16_t GM6020_speed;
+
+uint16_t M2006_position;
+int16_t M2006_speed,M2006_torque;
+
 /**
   * @brief          hal库CAN回调函数,接收电机数据
   * @param[in]      hcan:CAN句柄指针
@@ -58,7 +65,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
     if (hcan == &hcan1)
     {
-        //DM4310
+        //DM4310(俯仰角)
         if(rx_header.StdId==0x205)
         {
             int16_t p_int,s_int,t_int;
@@ -69,13 +76,22 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             pitch_speed = uint_to_float(s_int, V_MIN, V_MAX, 12); // (-45.0,45.0)
             pitch_torque = uint_to_float(t_int, T_MIN, T_MAX, 12); // (-18.0,18.0)
         }
+
+        //M2006(拨弹)
+        if(rx_header.StdId==0x206)
+        {
+            M2006_position=(rx_data[0]<<8)|rx_data[1];
+            M2006_speed=(rx_data[2]<<8)|rx_data[3];
+            M2006_torque=(rx_data[4]<<8)|rx_data[5];
+        }
     }
 
     if (hcan == &hcan2)
     {
         if(rx_header.StdId==0x206)
         {
-
+            GM6020_position=(rx_data[0]<<8)|rx_data[1];
+            GM6020_speed=(rx_data[2]<<8)|rx_data[3];
         }
     }
 }
@@ -109,6 +125,31 @@ void CAN_cmd_m3508(void)
     for (int i = 0; i < 8; i++)
     {
         stm32_can_send_data[i] = (packed_data >> (i * 8)) & 0xFF;
+    }
+
+    HAL_CAN_AddTxMessage(&hcan2, &stm32_tx_message, stm32_can_send_data, &send_mail_box);
+}
+
+void CAN_cmd_6020(void)
+{
+    uint32_t send_mail_box;
+    stm32_tx_message.StdId = 0x1FF;
+    stm32_tx_message.IDE = CAN_ID_STD;
+    stm32_tx_message.RTR = CAN_RTR_DATA;
+    stm32_tx_message.DLC = 0x08;
+
+    uint8_t tx_data[8] = {0};
+    Speed_PID_6020();
+
+    if(RCMode==1)
+    {
+        tx_data[2] = (OutputVoltage_6020 >> 8) & 0xFF;
+        tx_data[3] = OutputVoltage_6020 & 0xFF;
+    }
+
+    for (int i = 0; i < 8; i++)
+    {
+        stm32_can_send_data[i] = tx_data[i];
     }
 
     HAL_CAN_AddTxMessage(&hcan2, &stm32_tx_message, stm32_can_send_data, &send_mail_box);
