@@ -34,5 +34,12 @@ typedef enum
 extern volatile int16_t GM6020_position;
 extern volatile int16_t GM6020_speed;
 
+extern uint16_t M2006_position;
+extern int16_t M2006_speed,M2006_torque;
+
+extern float pitch_position;
+extern int32_t pitch_cnt;
+
 void CAN_cmd_m3508(void);
 void CAN_cmd_6020(void);
+void CAN_cmd_2006(void);

@@ -25,6 +25,7 @@
 #include "Bsp_CAN.h"
 #include "Bsp_Controller.h"
 #include "Driver_DM4310.h"
+#include "Driver_M2006.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,11 +45,17 @@ void HAL_UART_IDLE_Callback(UART_HandleTypeDef *huart);
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-static int16_t tim2_cnt=0;
+static int32_t tim2_cnt=0;
 static int16_t RCMode_cnt_tmp=0;
-int16_t DMMode=0;
-int16_t DM_cnt=0;
-volatile float DM_TargerPosition=1.5;
+int16_t DMMode_Init=0;
+int16_t DMMode_RC=0;
+int32_t DM_cnt=0;
+float DM_TargerPosition=1.5;
+float DM_TargerPosition_tmp=1.5;
+
+uint8_t pitch_status=0;
+uint8_t M2006_status=1;
+uint16_t M2006_status_cnt=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -260,12 +267,12 @@ void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
   //TIM2频率为1000Hz
-
-  //实现遥控器状态识�?,�?控时RCMode=1,关控时RCMode=0
   tim2_cnt++;
-  if(tim2_cnt>100)
+
+  //每0.07s判断一次遥控器状态
+  //开控时RCMode=1 关控时RCMode=0
+  if(tim2_cnt%70==1)
   {
-    tim2_cnt=0;
     if(RCMode_cnt==RCMode_cnt_tmp)
     {
       RCMode=0;
@@ -282,42 +289,116 @@ void TIM2_IRQHandler(void)
   if(tim2_cnt % 5 == 1)
   {
     CAN_cmd_m3508();
-    if(DM_cnt<600)
-    {
-      DM_TargerPosition=-0.3;
-      ctrl_motor(DM_TargerPosition,0,10,0.1,0);
-      DM_cnt++;
-    }
-    else
-    {
-      DMMode=1;
-    }
   }
 
-  //100Hz发送达妙4310控制数据
+  //100Hz发送pitch轴电机控制数据
   if(tim2_cnt % 10 == 1)
   {
-    if(RCMode==1&&DMMode==1)
+    //pitch轴电机初始化
+    if(DM_cnt<300)
     {
-      //电池有开关的车TargetPosition介于-0.74~0.2,软控范围在-0.71~0.15,平放大概在-0.3
-      //没开关的车TargerPosition介于1.02~2.09,实际控制在1.07~2.03,平放初始化大概在1.5
-      DM_TargerPosition += 0.000015*RC_Ctl.rc.ch3;
-      if (DM_TargerPosition > 0.15)
+      DM_TargerPosition=1.5;
+      ctrl_motor(DM_TargerPosition,0,8,0.3,0);
+      DM_cnt++;
+    }
+    if(DM_cnt==300)
+    {
+      DM_TargerPosition=pitch_position+6.28f;
+      DMMode_Init=1;
+      DM_cnt++;
+    }
+
+    if(RCMode==0)
+    {
+      DMMode_RC=0;
+      DM_TargerPosition_tmp=pitch_cnt;
+    }
+    if(RCMode==1&&DMMode_Init==1&&DMMode_RC==0)
+    {
+      ctrl_motor_Init();
+      if(pitch_cnt!=DM_TargerPosition_tmp)
       {
-        DM_TargerPosition = 0.15;
+        DM_TargerPosition=pitch_position+6.28f;
+        DMMode_RC=1;
       }
-      if (DM_TargerPosition < -0.71)
+    }
+
+    if(RCMode==1&&DMMode_Init==1&&DMMode_RC==1)
+    {
+      //瞄准镜在炮管侧上方的车TargetPosition介于-0.74~0.2,软控范围在-0.71~0.15,平放大概在-0.3
+      //瞄准镜在炮管正上方的车TargerPosition介于1.02~2.09,实际控制在1.07~2.03,平放初始化大概在1.5
+      DM_TargerPosition += 0.000015*RC_Ctl.rc.ch1;
+      if (DM_TargerPosition > 2.03)
       {
-        DM_TargerPosition = -0.71;
+        DM_TargerPosition = 2.03;
+      }
+      if (DM_TargerPosition < 1.07)
+      {
+        DM_TargerPosition = 1.07;
       }
       ctrl_motor(DM_TargerPosition,0,50,0.5,0);
     }
   }
 
-  //200hz发送6020电机控制数据
+  //200hz检测pitch轴DM电机状态
   if(tim2_cnt % 5 == 1)
   {
-    CAN_cmd_6020();
+    if(RCMode==1)
+    {
+      if(pitch_status==0)
+      {
+        ctrl_motor_Init();
+        pitch_status=1;
+      }
+    }
+    if(RCMode==0)
+    {
+      if(pitch_status==1)
+      {
+        ctrl_motor_Exit();
+        pitch_status=0;
+      }
+    }
+  }
+
+
+  //200hz控制yaw轴电机
+  if(tim2_cnt % 5 == 1)
+  {
+    if(RCMode==1)
+    {
+      CAN_cmd_6020();
+    }
+  }
+
+  //发送拨弹M2006电机控制数据(速度PID1000Hz,位置PID250Hz)
+  if(RCMode==1)
+  {
+    if((RC_Ctl.rc.s2==3)&&(M2006_status==0))   //回转后等待70ms再恢复上弹模式
+    {
+      M2006_status_cnt++;
+      if(M2006_status_cnt>70)
+      {
+        M2006_status=1;
+        M2006_status_cnt=0;
+      }
+    }
+    if((tim2_cnt%300==1)&&(RC_Ctl.rc.s2==3)&&(M2006_status==1))
+    {
+      TargetCircle+=4;
+    }
+
+    if(tim2_cnt % 4 == 1)
+    {
+      M2006_Position_PID();
+    }
+    CAN_cmd_2006();
+
+    if((M2006_torque>8000)&&(M2006_status==1))    //如果电机扭矩过大,判断进入堵转状态,回转一格
+    {
+      TargetCircle-=4;
+      M2006_status=0;
+    }
   }
 
   /* USER CODE END TIM2_IRQn 0 */

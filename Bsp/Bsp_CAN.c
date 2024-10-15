@@ -7,6 +7,7 @@
 #include <sys/types.h>
 
 #include "Driver_DM4310.h"
+#include "Driver_M2006.h"
 #include "Driver_PID.h"
 #include "main.h"
 
@@ -42,9 +43,10 @@ extern CAN_HandleTypeDef hcan2;
 static CAN_TxHeaderTypeDef  stm32_tx_message;
 static uint8_t              stm32_can_send_data[8];
 
-volatile float pitch_position;
-volatile float pitch_speed;
-volatile float pitch_torque;
+float pitch_position;
+float pitch_speed;
+float pitch_torque;
+int32_t pitch_cnt=0;
 
 volatile int16_t GM6020_position;
 volatile int16_t GM6020_speed;
@@ -75,6 +77,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             pitch_position = uint_to_float(p_int, P_MIN, P_MAX, 16); // (-12.5,12.5)
             pitch_speed = uint_to_float(s_int, V_MIN, V_MAX, 12); // (-45.0,45.0)
             pitch_torque = uint_to_float(t_int, T_MIN, T_MAX, 12); // (-18.0,18.0)
+            pitch_cnt++;
         }
 
         //M2006(拨弹)
@@ -153,4 +156,30 @@ void CAN_cmd_6020(void)
     }
 
     HAL_CAN_AddTxMessage(&hcan2, &stm32_tx_message, stm32_can_send_data, &send_mail_box);
+}
+
+void CAN_cmd_2006(void)
+{
+    M2006_Speed_PID();
+
+    uint32_t send_mail_box;
+    stm32_tx_message.StdId = 0x1FF;
+    stm32_tx_message.IDE = CAN_ID_STD;
+    stm32_tx_message.RTR = CAN_RTR_DATA;
+    stm32_tx_message.DLC = 0x08;
+
+    uint8_t tx_data[8] = {0};
+
+    if(RCMode==1)
+    {
+        tx_data[2] = (OutputCur_2006 >> 8) & 0xFF;
+        tx_data[3] = OutputCur_2006 & 0xFF;
+    }
+
+    for (int i = 0; i < 8; i++)
+    {
+        stm32_can_send_data[i] = tx_data[i];
+    }
+
+    HAL_CAN_AddTxMessage(&hcan1, &stm32_tx_message, stm32_can_send_data, &send_mail_box);
 }

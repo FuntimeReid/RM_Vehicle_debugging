@@ -19,14 +19,14 @@ float Speed_Kd_6020=0;
 
 int16_t SpdError_6020 = 0;	                //速度误差
 int32_t Spd_Integral_6020 = 0;  		    //速度积分
-int16_t SpeedErrorDiff_6020=0;				//速度微分
+int16_t SpeedErrorDiff_6020 = 0;			//速度微分
 int16_t Spd_PreviousError_6020 = 0; 		//速度上一次的误差
 
 void Speed_generate_6020(void)
 {
     if(RCMode==1)
     {
-        TargetSpeed_6020=(-0.15f)*RC_Ctl.rc.ch2;
+        TargetSpeed_6020=(-0.15f)*RC_Ctl.rc.ch0;
     }
     else
     {

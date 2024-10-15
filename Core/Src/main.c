@@ -126,9 +126,9 @@ int main(void)
   dbus_uart_init();
   can_filter_init();
   HAL_TIM_Base_Start_IT(&htim2);
-  //BMI088_Init();
-  ctrl_motor_Clear();
+  //ctrl_motor_Clear();
   ctrl_motor_Init();
+  //BMI088_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -138,14 +138,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    if(RCMode)
-    {
-      LED_WHITE();
-    }
-    else
-    {
-      LED_OFF();
-    }
+    if (RCMode == 1) LED_WHITE();
+    if (RCMode == 0) LED_OFF();
   }
   /* USER CODE END 3 */
 }
