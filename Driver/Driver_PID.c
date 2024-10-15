@@ -26,7 +26,7 @@ void Speed_generate_6020(void)
 {
     if(RCMode==1)
     {
-        TargetSpeed_6020=(-0.15f)*RC_Ctl.rc.ch0;
+        TargetSpeed_6020=(-0.12f)*RC_Ctl.rc.ch0;
     }
     else
     {

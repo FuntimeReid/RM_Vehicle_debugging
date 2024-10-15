@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "Bsp_CAN.h"
 #include "Bsp_Controller.h"
+#include "Driver_BMI088.h"
 #include "Driver_DM4310.h"
 #include "Driver_M2006.h"
 /* USER CODE END Includes */
@@ -252,7 +253,11 @@ void CAN1_RX0_IRQHandler(void)
 void TIM1_UP_TIM10_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
+  //1000Hz
 
+  //BMI088陀螺仪,加速度数据读取
+  ReadAccData(&BMI_acc);
+  ReadGyroData(&BMI_gyro);
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
@@ -266,11 +271,11 @@ void TIM1_UP_TIM10_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
-  //TIM2频率为1000Hz
+  //TIM2频率�???1000Hz
   tim2_cnt++;
 
-  //每0.07s判断一次遥控器状态
-  //开控时RCMode=1 关控时RCMode=0
+  //�???0.07s判断�???次遥控器状�??
+  //�???控时RCMode=1 关控时RCMode=0
   if(tim2_cnt%70==1)
   {
     if(RCMode_cnt==RCMode_cnt_tmp)
@@ -291,7 +296,7 @@ void TIM2_IRQHandler(void)
     CAN_cmd_m3508();
   }
 
-  //100Hz发送pitch轴电机控制数据
+  //100Hz发�?�pitch轴电机控制数�???
   if(tim2_cnt % 10 == 1)
   {
     //pitch轴电机初始化
@@ -325,8 +330,8 @@ void TIM2_IRQHandler(void)
 
     if(RCMode==1&&DMMode_Init==1&&DMMode_RC==1)
     {
-      //瞄准镜在炮管侧上方的车TargetPosition介于-0.74~0.2,软控范围在-0.71~0.15,平放大概在-0.3
-      //瞄准镜在炮管正上方的车TargerPosition介于1.02~2.09,实际控制在1.07~2.03,平放初始化大概在1.5
+      //瞄准镜在炮管侧上方的车TargetPosition介于-0.74~0.2,软控范围�???-0.71~0.15,平放大概�???-0.3
+      //瞄准镜在炮管正上方的车TargerPosition介于1.02~2.09,实际控制�???1.07~2.03,平放初始化大概在1.5
       DM_TargerPosition += 0.000015*RC_Ctl.rc.ch1;
       if (DM_TargerPosition > 2.03)
       {
@@ -340,7 +345,7 @@ void TIM2_IRQHandler(void)
     }
   }
 
-  //200hz检测pitch轴DM电机状态
+  //200hz�???测pitch轴DM电机状�??
   if(tim2_cnt % 5 == 1)
   {
     if(RCMode==1)
@@ -362,7 +367,7 @@ void TIM2_IRQHandler(void)
   }
 
 
-  //200hz控制yaw轴电机
+  //200hz控制yaw轴电�???
   if(tim2_cnt % 5 == 1)
   {
     if(RCMode==1)
@@ -371,10 +376,10 @@ void TIM2_IRQHandler(void)
     }
   }
 
-  //发送拨弹M2006电机控制数据(速度PID1000Hz,位置PID250Hz)
+  //发�?�拨弹M2006电机控制数据(速度PID1000Hz,位置PID250Hz)
   if(RCMode==1)
   {
-    if((RC_Ctl.rc.s2==3)&&(M2006_status==0))   //回转后等待70ms再恢复上弹模式
+    if((RC_Ctl.rc.s2==3)&&(M2006_status==0))   //回转后等�???70ms再恢复上弹模�???
     {
       M2006_status_cnt++;
       if(M2006_status_cnt>70)
@@ -394,7 +399,7 @@ void TIM2_IRQHandler(void)
     }
     CAN_cmd_2006();
 
-    if((M2006_torque>8000)&&(M2006_status==1))    //如果电机扭矩过大,判断进入堵转状态,回转一格
+    if((M2006_torque>8000)&&(M2006_status==1))    //如果电机扭矩过大,判断进入堵转状�??,回转�???�???
     {
       TargetCircle-=4;
       M2006_status=0;
@@ -429,7 +434,7 @@ void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
 
-  uart_receive_handler(&huart3);//调用之前定义的函数，传入DBUS串口的地�?，以处理接收事件
+  uart_receive_handler(&huart3);//调用之前定义的函数，传入DBUS串口的地�????，以处理接收事件
 
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);

@@ -81,7 +81,7 @@ static void MX_CAN2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void BMI088_Init(void);
+
 /* USER CODE END 0 */
 
 /**
@@ -92,7 +92,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-    //修复openocd初始化时钟问�??
+    //修复openocd初始化时钟问�?????
     //__HAL_RCC_HSI_ENABLE();
     __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSI);
   /* USER CODE END 1 */
@@ -125,10 +125,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   dbus_uart_init();
   can_filter_init();
-  HAL_TIM_Base_Start_IT(&htim2);
-  //ctrl_motor_Clear();
   ctrl_motor_Init();
-  //BMI088_Init();
+  HAL_TIM_Base_Start_IT(&htim1);
+  HAL_TIM_Base_Start_IT(&htim2);
+  BMI088_INIT();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -286,7 +286,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
   hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -322,7 +322,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 1679;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 999;
+  htim1.Init.Period = 99;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -462,12 +462,32 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOH, LED_R_Pin|LED_G_Pin|LED_B_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+
   /*Configure GPIO pins : LED_R_Pin LED_G_Pin LED_B_Pin */
   GPIO_InitStruct.Pin = LED_R_Pin|LED_G_Pin|LED_B_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -507,51 +527,6 @@ void LED_OFF(void)
   HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, GPIO_PIN_RESET);
-}
-
-void BMI088_Init(void)
-{
-  // 初始化加速度
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  pTxData = (0x7E & 0x7F);
-  HAL_SPI_Transmit(&hspi1, &pTxData, 1, 1000);
-  while(HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX);
-  pTxData = 0xB6;
-  HAL_SPI_Transmit(&hspi1, &pTxData, 1, 1000);
-  while(HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX);
-  HAL_Delay(1);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-
-  // 加�?�度计进入正常模�??
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  pTxData = (0x7D & 0x7F);
-  HAL_SPI_Transmit(&hspi1, &pTxData, 1, 1000);
-  while(HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX);
-  pTxData = 0x04;
-  HAL_SPI_Transmit(&hspi1, &pTxData, 1, 1000);
-  while(HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX);
-  HAL_Delay(1);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-
-  // 初始化陀螺仪
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-  pTxData = (0x14 & 0x7F);
-  HAL_SPI_Transmit(&hspi1, &pTxData, 1, 1000);
-  while(HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX);
-  pTxData = 0xB6;
-  HAL_SPI_Transmit(&hspi1, &pTxData, 1, 1000);
-  while(HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX);
-  HAL_Delay(30);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  if(htim == &htim1)
-  {
-    Read_Accelerometer();
-    Read_Gyroscope();
-  }
 }
 
 /* USER CODE END 4 */
