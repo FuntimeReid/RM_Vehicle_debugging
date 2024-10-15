@@ -48,7 +48,7 @@ float pitch_speed;
 float pitch_torque;
 int32_t pitch_cnt=0;
 
-volatile int16_t GM6020_position;
+volatile int16_t GM6020_position=0;
 volatile int16_t GM6020_speed;
 
 uint16_t M2006_position;

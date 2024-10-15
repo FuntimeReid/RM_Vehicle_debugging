@@ -208,5 +208,14 @@ bmi088_error_e VerifyGyroChipID(void);
 bmi088_error_e VerifyAccSelfTest(void);
 bmi088_error_e VerifyGyroSelfTest(void);
 
+void BMI_Init(void);
+void BMI_Get(void);
+void get_angle(float q[4], float *yaw, float *pitch, float *roll);
+
 extern acc_raw_data_t BMI_acc;
 extern gyro_raw_data_t BMI_gyro;
+
+extern float accelerometer[3];
+extern float gyro[3];
+extern float quat[4];
+extern float INS_angle[3];

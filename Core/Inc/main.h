@@ -62,8 +62,13 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define IST8310_RST_Pin GPIO_PIN_6
+#define IST8310_RST_GPIO_Port GPIOG
 #define LED_R_Pin GPIO_PIN_12
 #define LED_R_GPIO_Port GPIOH
+#define IST8310_DRDY_Pin GPIO_PIN_3
+#define IST8310_DRDY_GPIO_Port GPIOG
+#define IST8310_DRDY_EXTI_IRQn EXTI3_IRQn
 #define LED_G_Pin GPIO_PIN_11
 #define LED_G_GPIO_Port GPIOH
 #define LED_B_Pin GPIO_PIN_10
@@ -102,6 +107,7 @@ void Error_Handler(void);
   extern UART_HandleTypeDef huart3;
   extern volatile uint8_t dbus_rx_buffer[18];
   extern volatile RC_Ctl_t RC_Ctl;
+  extern float IST8310_mag[3];
 
 /* USER CODE END Private defines */
 
