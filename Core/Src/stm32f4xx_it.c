@@ -18,16 +18,15 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+// ReSharper disable CppParameterMayBeConstPtrOrRef
 #include "main.h"
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Bsp_CAN.h"
 #include "Bsp_Controller.h"
-#include "Driver_BMI088.h"
 #include "Driver_DM4310.h"
 #include "Driver_M2006.h"
-#include "MahonyAHRS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,21 +46,17 @@ void HAL_UART_IDLE_Callback(UART_HandleTypeDef *huart);
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+
 static int32_t tim1_cnt=0;
-static int32_t tim2_cnt=0;
 static int16_t RCMode_cnt_tmp=0;
 int16_t DMMode_Init=0;
 int16_t DMMode_RC=0;
 int32_t DM_cnt=0;
 float DM_TargerPosition=1.5;
 float DM_TargerPosition_tmp=1.5;
-
 uint8_t pitch_status=0;
 uint8_t M2006_status=1;
 uint16_t M2006_status_cnt=0;
-
-float InsMax=0;
-float ActualIns=0;
 
 /* USER CODE END PV */
 
@@ -78,11 +73,12 @@ float ActualIns=0;
 /* External variables --------------------------------------------------------*/
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
-extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim1;
-extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim10;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 extern UART_HandleTypeDef huart3;
+extern TIM_HandleTypeDef htim2;
+
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -212,7 +208,7 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
+
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
@@ -233,10 +229,24 @@ void EXTI3_IRQHandler(void)
   /* USER CODE BEGIN EXTI3_IRQn 0 */
 
   /* USER CODE END EXTI3_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(IST8310_DRDY_Pin);
+  HAL_GPIO_EXTI_IRQHandler(DRDY_IST8310_Pin);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
   /* USER CODE END EXTI3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line4 interrupt.
+  */
+void EXTI4_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI4_IRQn 0 */
+
+  /* USER CODE END EXTI4_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(INT1_ACCEL_Pin);
+  /* USER CODE BEGIN EXTI4_IRQn 1 */
+
+  /* USER CODE END EXTI4_IRQn 1 */
 }
 
 /**
@@ -268,25 +278,31 @@ void CAN1_RX0_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(INT1_GYRO_Pin);
+  HAL_GPIO_EXTI_IRQHandler(HALL_SENSOR_PIN1_Pin);
+  HAL_GPIO_EXTI_IRQHandler(HALL_SENSOR_PIN2_Pin);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
   */
 void TIM1_UP_TIM10_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
-  //1000Hz
-  tim1_cnt++;
-
-  //BMI088�?螺仪,加�?�度数据读取
-    BMI_Get();
-
-  //数据解算
-  MahonyAHRSupdate(quat,gyro[0], gyro[1], gyro[2], accelerometer[0], accelerometer[1], accelerometer[2],IST8310_mag[0],IST8310_mag[1],IST8310_mag[2]);  //对得到的加�?�度计�?�陀螺仪数据进行计算得到四元�?
-  get_angle(quat, INS_angle, INS_angle+1, INS_angle+2);                                                    //对四元数计算得到欧拉�?
-  if(InsMax<INS_angle[0]) InsMax=INS_angle[0];
-  ActualIns=3.1415926f-INS_angle[0];
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
+  HAL_TIM_IRQHandler(&htim10);
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
@@ -298,140 +314,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
-  //TIM2频率�????1000Hz
-  tim2_cnt++;
-
-  //�????0.07s判断�????次遥控器状�??
-  //�????控时RCMode=1 关控时RCMode=0
-  if(tim2_cnt%70==1)
-  {
-    if(RCMode_cnt==RCMode_cnt_tmp)
-    {
-      RCMode=0;
-      RCMode_cnt=0;
-    }
-    else
-    {
-      RCMode=1;
-    }
-    RCMode_cnt_tmp=RCMode_cnt;
-  }
-
-  //200hz向底盘发送遥控器数据
-  if(tim2_cnt % 5 == 1)
-  {
-    CAN_cmd_m3508();
-  }
-
-  //100Hz发�?�pitch轴电机控制数�????
-  if(tim2_cnt % 10 == 1)
-  {
-    //pitch轴电机初始化
-    if(DM_cnt<300)
-    {
-      DM_TargerPosition=1.5;
-      ctrl_motor(DM_TargerPosition,0,8,0.3,0);
-      DM_cnt++;
-    }
-    if(DM_cnt==300)
-    {
-      DM_TargerPosition=pitch_position+6.28f;
-      DMMode_Init=1;
-      DM_cnt++;
-    }
-
-    if(RCMode==0)
-    {
-      DMMode_RC=0;
-      DM_TargerPosition_tmp=pitch_cnt;
-    }
-    if(RCMode==1&&DMMode_Init==1&&DMMode_RC==0)
-    {
-      ctrl_motor_Init();
-      if(pitch_cnt!=DM_TargerPosition_tmp)
-      {
-        DM_TargerPosition=pitch_position+6.28f;
-        DMMode_RC=1;
-      }
-    }
-
-    if(RCMode==1&&DMMode_Init==1&&DMMode_RC==1)
-    {
-      //瞄准镜在炮管侧上方的车TargetPosition介于-0.74~0.2,软控范围�????-0.71~0.15,平放大概�????-0.3
-      //瞄准镜在炮管正上方的车TargerPosition介于1.02~2.09,实际控制�????1.07~2.03,平放初始化大概在1.5
-      DM_TargerPosition += 0.000015*RC_Ctl.rc.ch1;
-      if (DM_TargerPosition > 2.03)
-      {
-        DM_TargerPosition = 2.03;
-      }
-      if (DM_TargerPosition < 1.07)
-      {
-        DM_TargerPosition = 1.07;
-      }
-      ctrl_motor(DM_TargerPosition,0,50,0.5,0);
-    }
-  }
-
-  //200hz�????测pitch轴DM电机状�??
-  if(tim2_cnt % 5 == 1)
-  {
-    if(RCMode==1)
-    {
-      if(pitch_status==0)
-      {
-        ctrl_motor_Init();
-        pitch_status=1;
-      }
-    }
-    if(RCMode==0)
-    {
-      if(pitch_status==1)
-      {
-        ctrl_motor_Exit();
-        pitch_status=0;
-      }
-    }
-  }
-
-
-  //200hz控制yaw轴电�????
-  if(tim2_cnt % 5 == 1)
-  {
-    if(RCMode==1)
-    {
-      CAN_cmd_6020();
-    }
-  }
-
-  //发�?�拨弹M2006电机控制数据(速度PID1000Hz,位置PID250Hz)
-  if(RCMode==1)
-  {
-    if((RC_Ctl.rc.s2==3)&&(M2006_status==0))   //回转后等�????70ms再恢复上弹模�????
-    {
-      M2006_status_cnt++;
-      if(M2006_status_cnt>70)
-      {
-        M2006_status=1;
-        M2006_status_cnt=0;
-      }
-    }
-    if((tim2_cnt%300==1)&&(RC_Ctl.rc.s2==3)&&(M2006_status==1))
-    {
-      TargetCircle+=4;
-    }
-
-    if(tim2_cnt % 4 == 1)
-    {
-      M2006_Position_PID();
-    }
-    CAN_cmd_2006();
-
-    if((M2006_torque>8000)&&(M2006_status==1))    //如果电机扭矩过大,判断进入堵转状�??,回转�????�????
-    {
-      TargetCircle-=4;
-      M2006_status=0;
-    }
-  }
 
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
@@ -441,27 +323,13 @@ void TIM2_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles SPI1 global interrupt.
-  */
-void SPI1_IRQHandler(void)
-{
-  /* USER CODE BEGIN SPI1_IRQn 0 */
-
-  /* USER CODE END SPI1_IRQn 0 */
-  HAL_SPI_IRQHandler(&hspi1);
-  /* USER CODE BEGIN SPI1_IRQn 1 */
-
-  /* USER CODE END SPI1_IRQn 1 */
-}
-
-/**
   * @brief This function handles USART3 global interrupt.
   */
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
 
-  uart_receive_handler(&huart3);//调用之前定义的函数，传入DBUS串口的地�?????，以处理接收事件
+  uart_receive_handler(&huart3);//调用之前定义的函数，传入DBUS串口的地�???????，以处理接收事件
 
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
@@ -485,6 +353,157 @@ void CAN2_RX0_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+  if (htim->Instance == TIM1)
+  {
+    //TIM1频率为1000Hz
+    tim1_cnt++;
 
+    //关控状态判断 每0.7s判断一次
+    //开控时RCMode=1 关控时RCMode=0
+    if(tim1_cnt%70==1)
+    {
+      if(RCMode_cnt==RCMode_cnt_tmp)
+      {
+        RCMode=0;
+        RCMode_cnt=0;
+      }
+      else
+      {
+        RCMode=1;
+      }
+      RCMode_cnt_tmp=RCMode_cnt;
+    }
+
+    //500hz向底盘发送遥控器数据
+    if(tim1_cnt % 2 == 1)
+    {
+      CAN_cmd_m3508();
+    }
+
+    //100Hz发送pitch轴电机控制数据
+    if(tim1_cnt % 10 == 1)
+    {
+      //pitch轴电机初始化
+      if(DM_cnt<300)
+      {
+        DM_TargerPosition=1.5;
+        ctrl_motor(DM_TargerPosition,0,8,0.3,0);
+        DM_cnt++;
+      }
+      if(DM_cnt==300)
+      {
+        DM_TargerPosition=pitch_position+6.28f;
+        DMMode_Init=1;
+        DM_cnt++;
+      }
+
+      //设计关控保护重启逻辑 重启后重新初始化并读取当前位置作为TargetPosition
+      if(RCMode==0)
+      {
+        DMMode_RC=0;
+        DM_TargerPosition_tmp=pitch_cnt;
+      }
+      if(RCMode==1&&DMMode_Init==1&&DMMode_RC==0)
+      {
+        ctrl_motor_Init();
+        if(pitch_cnt!=DM_TargerPosition_tmp)
+        {
+          DM_TargerPosition=pitch_position+6.283f;
+          DMMode_RC=1;
+        }
+      }
+
+      if(RCMode==1&&DMMode_Init==1&&DMMode_RC==1)
+      {
+        //电池外面是昊京的的车TargetPosition介于-0.74~0.2,软控范围限制在-0.71~0.15,平放初始化大概在-0.3
+        //电池外面是Tower的车TargerPosition介于1.02~2.09,实际控制限制在1.07~2.03,平放初始化大概在1.5
+        DM_TargerPosition += 0.000015*RC_Ctl.rc.ch1;
+        if (DM_TargerPosition > 2.03)
+        {
+          DM_TargerPosition = 2.03;
+        }
+        if (DM_TargerPosition < 1.07)
+        {
+          DM_TargerPosition = 1.07;
+        }
+        ctrl_motor(DM_TargerPosition,0,50,0.5,0);
+      }
+    }
+
+    //200hz检测pitch轴DM电机状态 关控时使其失能
+    if(tim1_cnt % 5 == 1)
+    {
+      if(RCMode==1)
+      {
+        if(pitch_status==0)
+        {
+          ctrl_motor_Init();
+          pitch_status=1;
+        }
+      }
+      if(RCMode==0)
+      {
+        if(pitch_status==1)
+        {
+          ctrl_motor_Exit();
+          pitch_status=0;
+        }
+      }
+    }
+
+    //500hz控制yaw轴电机
+    if(tim1_cnt % 2 == 1)
+    {
+      if(RCMode==1)
+      {
+        CAN_cmd_6020();
+      }
+    }
+
+    //发送拨弹M2006电机控制数据(速度PID1000Hz,位置PID250Hz)
+    if(RCMode==1)
+    {
+      //堵转保护
+      if((RC_Ctl.rc.s2==3)&&(M2006_status==0))   //回转后等待70ms再恢复拨弹模式
+      {
+        M2006_status_cnt++;
+        if(M2006_status_cnt>70)
+        {
+          M2006_status=1;
+          M2006_status_cnt=0;
+        }
+      }
+
+      //每0.3s转一格
+      if((tim1_cnt%300==1)&&(RC_Ctl.rc.s2==3)&&(M2006_status==1))
+      {
+        TargetCircle+=4;
+      }
+
+      if(tim1_cnt % 4 == 1)
+      {
+        M2006_Position_PID();
+      }
+      CAN_cmd_2006();
+
+      if((M2006_torque>8000)&&(M2006_status==1))    //如果电机扭矩过大,判断进入堵转状状态,回转一格
+      {
+        TargetCircle-=4;
+        M2006_status=0;
+      }
+    }
+    }
+    /* USER CODE END Callback 0 */
+    if (htim->Instance == TIM2)
+    {
+      HAL_IncTick();
+    }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /* USER CODE END 1 */
