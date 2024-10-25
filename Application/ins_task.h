@@ -67,6 +67,10 @@ typedef struct
 
 extern INS_t INS;
 
+extern uint16_t InsInit;
+extern float ActualIns;
+extern float ActualGyro;
+
 void INS_Init(void);
 void INS_Task(void);
 void IMU_Temperature_Ctrl(void);

@@ -28,7 +28,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "BMI088driver.h"
@@ -129,10 +128,11 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    INS_Task();
+
     /* USER CODE BEGIN 3 */
-    if (RCMode == 1) LED_WHITE();
-    if (RCMode == 0) LED_OFF();
+    INS_Task();
+    // if (RCMode == 1) LED_WHITE();
+    // if (RCMode == 0) LED_OFF();
   }
   /* USER CODE END 3 */
 }

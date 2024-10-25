@@ -28,6 +28,10 @@ static float dt = 0, t = 0;
 uint8_t ins_debug_mode = 0;
 float RefTemp = 40;
 
+uint16_t InsInit=0;
+float ActualIns=0;
+float ActualGyro=0;
+
 static void IMU_Param_Correction(IMU_Param_t *param, float gyro[3], float accel[3]);
 
 void INS_Init(void)
@@ -98,6 +102,9 @@ void INS_Task(void)
         INS.Pitch = QEKF_INS.Pitch;
         INS.Roll = QEKF_INS.Roll;
         INS.YawTotalAngle = QEKF_INS.YawTotalAngle;
+
+        ActualIns=-1.0f*INS.YawTotalAngle;
+        ActualGyro=-1.0f*INS.Gyro[2];
     }
 
     // temperature control

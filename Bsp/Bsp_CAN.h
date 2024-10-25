@@ -41,5 +41,6 @@ extern float pitch_position;
 extern int32_t pitch_cnt;
 
 void CAN_cmd_m3508(void);
+void CAN_cmd_m3508_expend(void);
 void CAN_cmd_6020(void);
 void CAN_cmd_2006(void);
