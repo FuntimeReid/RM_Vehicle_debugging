@@ -27,6 +27,8 @@
 #include "Bsp_Controller.h"
 #include "Driver_DM4310.h"
 #include "Driver_M2006.h"
+#include "Driver_6020.h"
+#include "ins_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +59,7 @@ float DM_TargerPosition_tmp=1.5;
 uint8_t pitch_status=0;
 uint8_t M2006_status=1;
 uint16_t M2006_status_cnt=0;
+int16_t s1_tmp=0;
 
 /* USER CODE END PV */
 
@@ -377,7 +380,31 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       RCMode_cnt_tmp=RCMode_cnt;
     }
 
-    //500hz向底盘发送遥控器数据
+    //初始化yaw轴目标位置
+    if((InsInit==0)&&(ActualIns!=0))
+    {
+      TargetPosition_6020=ActualIns;
+      InsInit=1;
+    }
+
+    //控制yaw轴电机
+    if((InsInit==1)&&(RCMode==1))
+    {
+      //200HzPID
+      if(tim1_cnt%5==1)
+      {
+        if((RC_Ctl.rc.s1==1)&&(s1_tmp!=1))
+        {
+          TargetPosition_6020=ActualIns;
+        }
+        TargetPosition_6020 += 0.0037f*RC_Ctl.rc.ch0;
+        PositionPID_6020();
+        CAN_cmd_6020();
+        s1_tmp=RC_Ctl.rc.s1;
+      }
+    }
+
+    //500hz向底盘发送数据
     if(tim1_cnt % 2 == 1)
     {
       CAN_cmd_m3508();
@@ -389,13 +416,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       //pitch轴电机初始化
       if(DM_cnt<300)
       {
-        DM_TargerPosition=1.5;
+        DM_TargerPosition=-0.3;
         ctrl_motor(DM_TargerPosition,0,8,0.3,0);
         DM_cnt++;
       }
       if(DM_cnt==300)
       {
-        DM_TargerPosition=pitch_position+6.28f;
+        if(pitch_position<-3) DM_TargerPosition=pitch_position+6.283f+0.01f;
+        if(pitch_position>=-3) DM_TargerPosition=pitch_position+0.01f;
+        //DM_TargerPosition=pitch_position+6.28f;
         DMMode_Init=1;
         DM_cnt++;
       }
@@ -411,23 +440,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         ctrl_motor_Init();
         if(pitch_cnt!=DM_TargerPosition_tmp)
         {
-          DM_TargerPosition=pitch_position+6.283f;
+          if(pitch_position<-3) DM_TargerPosition=pitch_position+6.283f+0.01f;
+          if(pitch_position>=-3) DM_TargerPosition=pitch_position+0.01f;
+          //DM_TargerPosition=pitch_position+6.283f;
           DMMode_RC=1;
         }
       }
 
       if(RCMode==1&&DMMode_Init==1&&DMMode_RC==1)
       {
-        //电池外面是昊京的的车TargetPosition介于-0.74~0.2,软控范围限制在-0.71~0.15,平放初始化大概在-0.3
-        //电池外面是Tower的车TargerPosition介于1.02~2.09,实际控制限制在1.07~2.03,平放初始化大概在1.5
+        //电池外面是昊京的的车TargetPosition介于-0.74~0.2,软控范围限制在-0.71~0.15,平放初始化大概在-0.3,偏移量为0.01f(但要分情况)
+        //电池外面是Tower的车TargerPosition介于1.02~2.09,实际控制限制在1.07~2.03,平放初始化大概在1.5,偏移量为6.283f
         DM_TargerPosition += 0.000015*RC_Ctl.rc.ch1;
-        if (DM_TargerPosition > 2.03)
+        if (DM_TargerPosition > 0.15)
         {
-          DM_TargerPosition = 2.03;
+          DM_TargerPosition = 0.15;
         }
-        if (DM_TargerPosition < 1.07)
+        if (DM_TargerPosition < -0.71)
         {
-          DM_TargerPosition = 1.07;
+          DM_TargerPosition = -0.71;
         }
         ctrl_motor(DM_TargerPosition,0,50,0.5,0);
       }
@@ -451,15 +482,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
           ctrl_motor_Exit();
           pitch_status=0;
         }
-      }
-    }
-
-    //500hz控制yaw轴电机
-    if(tim1_cnt % 2 == 1)
-    {
-      if(RCMode==1)
-      {
-        CAN_cmd_6020();
       }
     }
 
@@ -489,9 +511,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       }
       CAN_cmd_2006();
 
-      if((M2006_torque>8000)&&(M2006_status==1))    //如果电机扭矩过大,判断进入堵转状状态,回转一格
+      if((M2006_torque>6000)&&(M2006_status==1))    //如果电机扭矩过大,判断进入堵转状状态,回转半格
       {
-        TargetCircle-=4;
+        TargetCircle-=6;
         M2006_status=0;
       }
     }

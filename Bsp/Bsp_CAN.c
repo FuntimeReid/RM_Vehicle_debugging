@@ -8,7 +8,7 @@
 
 #include "Driver_DM4310.h"
 #include "Driver_M2006.h"
-#include "Driver_PID.h"
+#include "Driver_6020.h"
 #include "main.h"
 
 extern CAN_HandleTypeDef hcan1;
@@ -128,6 +128,26 @@ void CAN_cmd_m3508(void)
     for (int i = 0; i < 8; i++)
     {
         stm32_can_send_data[i] = (packed_data >> (i * 8)) & 0xFF;
+    }
+
+    HAL_CAN_AddTxMessage(&hcan2, &stm32_tx_message, stm32_can_send_data, &send_mail_box);
+}
+
+void CAN_cmd_m3508_expend(void)
+{
+    uint32_t send_mail_box;
+    stm32_tx_message.StdId = 0x211;
+    stm32_tx_message.IDE = CAN_ID_STD;
+    stm32_tx_message.RTR = CAN_RTR_DATA;
+    stm32_tx_message.DLC = 0x08;
+
+    stm32_can_send_data[0]=(GM6020_position >> 8) & 0xFF;
+    stm32_can_send_data[1]=GM6020_position & 0xFF;
+
+    // 将 64 位数据分配到 8 个字节的数组中
+    for (int i = 2; i < 8; i++)
+    {
+        stm32_can_send_data[i] = 0;
     }
 
     HAL_CAN_AddTxMessage(&hcan2, &stm32_tx_message, stm32_can_send_data, &send_mail_box);
